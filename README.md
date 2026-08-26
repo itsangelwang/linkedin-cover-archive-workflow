@@ -91,3 +91,6 @@ articles/YYYY-MM-DD-slug/
 - `scripts/init_article_archive.py`：创建与去重文章归档
 - `scripts/make_mobile_preview.py`：验证比例并生成手机端预览
 
+## 维护者
+
+[@itsangelwang](https://github.com/itsangelwang)
