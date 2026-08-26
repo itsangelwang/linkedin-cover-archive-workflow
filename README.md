@@ -69,6 +69,7 @@ articles/YYYY-MM-DD-slug/
 `articles/` 可能包含原始文章、作者信息、未发布内容、提示词和生成图片，应当视为私人工作数据。
 
 - 不要把 `articles/` 提交到公开仓库。
+- 初始化脚本会把归档目录加入当前仓库的本地 `.git/info/exclude`；如果其中已有被 Git 跟踪的文件，脚本会停止并要求人工处理。
 - 不要在 skill 文件中写入 API key、访问令牌、私人邮箱或本机绝对路径。
 - 发布前运行 `git status` 和 `git ls-files`，确认提交清单中只有预期文件。
 - 如需公开某个案例，应先复制到独立目录，删除文档元数据并逐项人工审查。
@@ -78,8 +79,8 @@ articles/YYYY-MM-DD-slug/
 
 ## 依赖
 
-- Python 3
-- Pillow（用于生成手机端预览）
+- Python 3.10+
+- Pillow 12.3+（用于生成手机端预览；安装范围见 `requirements.txt`）
 - 能够读取输入文档并生成或编辑图片的 Codex 环境
 
 ## 主要文件
@@ -90,6 +91,8 @@ articles/YYYY-MM-DD-slug/
 - `references/archive-convention.md`：本地归档约定
 - `scripts/init_article_archive.py`：创建与去重文章归档
 - `scripts/make_mobile_preview.py`：验证比例并生成手机端预览
+
+预览脚本拒绝输入与输出使用同一路径，并限制异常大的输入图片和输出宽度，以避免覆盖原图或意外耗尽内存。
 
 ## 维护者
 

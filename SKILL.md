@@ -16,6 +16,7 @@ Produce a strong 1.91:1 LinkedIn article cover and preserve a concise, reusable 
 - Use `-v2`, `-v3`, and so on for revisions.
 - Keep one article per archive folder under `articles/`.
 - Treat `articles/` as private working data. Never commit, publish, or upload it unless the user explicitly requests publication of specific reviewed files.
+- Let the archive initializer add the archive root to the repository's local Git exclude file. If it reports tracked archive files or cannot verify exclusion, stop and resolve that warning before continuing.
 - Before any repository publish or push, verify that source documents, article text, prompts, candidates, previews, decisions, credentials, and personal metadata are excluded from Git tracking.
 - Do not browse or fact-check unless requested or current facts are essential.
 
@@ -61,6 +62,7 @@ After prompt confirmation, generate one image per direction and save all three i
 When the user explicitly requests separate chat branches for editing, fork one same-directory task per direction. Give each task ownership of exactly one candidate basename and its revisions; require distinct filenames, forbid touching other directions, and keep all tasks in the shared article archive. Do not create task branches without explicit user authorization.
 
 Run `scripts/make_mobile_preview.py` for each candidate, writing results to `previews/`. Inspect both original and thumbnail.
+Never pass the input image as the preview output path; the script rejects in-place overwrite.
 
 ## 6. QA, select, and revise
 

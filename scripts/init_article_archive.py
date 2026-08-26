@@ -7,6 +7,7 @@ import argparse
 import hashlib
 import re
 import shutil
+import subprocess
 import unicodedata
 from datetime import date
 from pathlib import Path
@@ -124,10 +125,72 @@ def find_existing_archive(root: Path, source_hash: str) -> Path | None:
     return None
 
 
+def git_output(*args: str) -> str | None:
+    result = subprocess.run(
+        ["git", *args],
+        check=False,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+        text=True,
+    )
+    return result.stdout.strip() if result.returncode == 0 else None
+
+
+def protect_archive_from_git(root: Path) -> None:
+    """Keep a repository-local archive out of normal Git staging."""
+    repository_text = git_output("rev-parse", "--show-toplevel")
+    if not repository_text:
+        return
+
+    repository = Path(repository_text).resolve()
+    archive = root.expanduser().resolve()
+    try:
+        relative = archive.relative_to(repository)
+    except ValueError:
+        return
+    if relative == Path("."):
+        raise SystemExit("archive root cannot be the Git repository root")
+
+    tracked_text = git_output("ls-files", "--", relative.as_posix()) or ""
+    tracked = [
+        item
+        for item in tracked_text.splitlines()
+        if item and Path(item).name != ".gitkeep"
+    ]
+    if tracked:
+        raise SystemExit(
+            "archive root already contains Git-tracked files; untrack and review them "
+            "before storing private article data"
+        )
+
+    exclude_text = git_output("rev-parse", "--git-path", "info/exclude")
+    if not exclude_text:
+        raise SystemExit("unable to locate Git's local exclude file")
+    exclude = Path(exclude_text)
+    if not exclude.is_absolute():
+        exclude = Path.cwd() / exclude
+    exclude = exclude.resolve()
+    exclude.parent.mkdir(parents=True, exist_ok=True)
+
+    pattern = f"/{relative.as_posix().rstrip('/')}/**"
+    existing = exclude.read_text(encoding="utf-8") if exclude.exists() else ""
+    if pattern not in existing.splitlines():
+        prefix = "" if not existing or existing.endswith("\n") else "\n"
+        with exclude.open("a", encoding="utf-8") as stream:
+            stream.write(f"{prefix}# Private article archives created by linkedin-cover-archive-workflow\n")
+            stream.write(f"{pattern}\n")
+
+    probe = archive / ".privacy-check"
+    if git_output("check-ignore", "--no-index", "--", str(probe)) is None:
+        raise SystemExit("failed to verify that the archive root is ignored by Git")
+
+
 def main() -> int:
     args = parse_args()
     if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", args.date):
         raise SystemExit("--date must use YYYY-MM-DD")
+
+    protect_archive_from_git(args.root)
 
     source = args.source.expanduser().resolve() if args.source else None
     source_hash = None
