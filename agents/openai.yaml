@@ -1,0 +1,4 @@
+interface:
+  display_name: "LinkedIn Cover Archive Workflow"
+  short_description: "Create and archive mobile-ready LinkedIn covers"
+  default_prompt: "Use $linkedin-cover-archive-workflow to analyze my article, archive the work, and create a mobile-readable text-free LinkedIn cover."
