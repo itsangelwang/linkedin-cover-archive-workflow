@@ -62,7 +62,7 @@ After prompt confirmation, generate one image per direction and save all three i
 When the user explicitly requests separate chat branches for editing, fork one same-directory task per direction. Give each task ownership of exactly one candidate basename and its revisions; require distinct filenames, forbid touching other directions, and keep all tasks in the shared article archive. Do not create task branches without explicit user authorization.
 
 Run `scripts/make_mobile_preview.py` for each candidate, writing results to `previews/`. Inspect both original and thumbnail.
-Never pass the input image as the preview output path; the script rejects in-place overwrite.
+Never pass the input image as the preview output path. The script confines output to the current project, rejects symbolic links and existing files, and requires explicit `--force` to replace an existing regular preview.
 
 ## 6. QA, select, and revise
 
