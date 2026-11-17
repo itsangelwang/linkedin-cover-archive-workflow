@@ -108,3 +108,7 @@ The preview script only writes inside the current project. It refuses identical 
 ## Maintainer
 
 [@itsangelwang](https://github.com/itsangelwang)
+
+## License
+
+[MIT](LICENSE): free to use, change and share. Please keep the copyright notice.

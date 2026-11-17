@@ -108,3 +108,7 @@ articles/YYYY-MM-DD-slug/
 ## 维护者
 
 [@itsangelwang](https://github.com/itsangelwang)
+
+## 许可证
+
+[MIT](LICENSE)：可以自由使用、修改和分享，请保留版权声明。
